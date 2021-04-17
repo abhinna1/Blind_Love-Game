@@ -1,44 +1,44 @@
 import pygame,sys
-pygame.init()#initializing pygame
 
-screen=pygame.display.set_mode((1000,600))#Window Resolution
-title=pygame.display.set_caption('Blind Love')#Window Title
+class game:
 
-clock=pygame.time.Clock()
+    def __init__(self,win_x,win_y):
+        self.win_x=win_x
+        self.win_y=win_y
+        self.screen = pygame.display.set_mode((self.win_x, self.win_y))
 
-ground=pygame.transform.scale(pygame.image.load('png files/Ground.png'),(1000,500))
-sky=pygame.image.load('png files/Sky.png')
-sky=pygame.transform.scale(sky,(1000,1000))
-clouds=pygame.transform.scale(pygame.image.load('png files/clouds.png'),(700,600))
-
-#sky=pygame.transform.scale2x(sky)
-character = pygame.image.load('png files/Still Animation/Still Character Animation1.png')
-
-#Character info
-char_x=50
-char_y=432
-char_vel=5
-
-while True:
-    key = pygame.key.get_pressed()
-
-    screen.blit(sky, (0, -50))
-    screen.blit(clouds, (-100, -50))
-    screen.blit(clouds, (500, -100))
-    screen.blit(ground, (0, 120))
-    screen.blit(character, (char_x, char_y))
-    for event in pygame.event.get():
-        if event.type==pygame.QUIT:
-            quit()
-            sys.exit()
-        if key[pygame.K_d]or key[pygame.K_RIGHT]:
-            char_x=char_x+char_vel
-        if key[pygame.K_a]or key[pygame.K_LEFT]:
-            char_x=char_x-char_vel
+        self.key=pygame.key.get_pressed()
+        def get_Char(char_x,char_y,vel):
+            self.char=pygame.image.load('png files/Still Animation/Still Character Animation1.png')
+            self.screen.blit(self.char,(char_x,char_y))
+        def sky(sky_x,sky_y):
+            self.sky=pygame.image.load('png files/Sky.png')
+            self.sky=pygame.transform.scale(self.sky,(1000,1000))
+            self.screen.blit(self.sky,(sky_x,sky_y))
+        def ground(ground_x,ground_y):
+            self.ground=pygame.image.load('png files/Ground.png')
+            self.screen.blit(self.ground,(ground_x,ground_y))
+        def cloud(cloud1_x,cloud1_y,cloud2_x,cloud2_y):
+            self.cloud1=pygame.image.load('png files/clouds.png')
+            self.cloud2=pygame.image.load('png files/clouds.png')
+            self.cloud1 = pygame.transform.scale(self.cloud1, (700, 600))
+            self.cloud2 = pygame.transform.scale(self.cloud2, (700, 600))
+            self.screen.blit(self.cloud1,(cloud1_x,cloud1_y))
+            self.screen.blit(self.cloud2,(cloud2_x,cloud2_y))
 
 
+    #GameLoop
+        self.running=True
+        while self.running==True:
+            sky(0, -50)
+            cloud(-200,-50,500,-50)
+            ground(0,70)
+            get_Char(50,470,5)
 
+            for self.event in pygame.event.get():
+                if self.event.type==pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
-
-    pygame.display.update()
-    clock.tick(120)
+            pygame.display.update()
+game(1000,600)

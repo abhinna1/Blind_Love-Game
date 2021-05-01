@@ -15,11 +15,11 @@ class game:
         self.screen.fill((135,206,235))
 
     def images(self):
-        self.char=pygame.image.load('png files/Still Animation/Still Character Animation1.png')
+        self.char=pygame.image.load('png files/Still Animation/Still Character Animation1.png').convert_alpha()
         self.char_rect=pygame.Rect(20,20,20,20)
 
-        self.ground=pygame.image.load('Tile Maps/Groud Tile.png')
-        self.soil=pygame.image.load('Tile Maps/soil.png')
+        self.ground=pygame.image.load('Tile Maps/Groud Tile.png').convert_alpha()
+        self.soil=pygame.image.load('Tile Maps/soil.png').convert_alpha()
 
     def tile_map(self):
         self.tile_y=0

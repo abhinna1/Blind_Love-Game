@@ -1,205 +1,154 @@
-import pygame, sys
-
-
+import pygame,sys
 pygame.init()
-window_size=(990,600)
-clock = pygame.time.Clock()
 
-
-cloud1_x = -200
-cloud1_y = -100
-cloud2_x = 800
-cloud2_y = -50
-
-char_sprite = 0
-char_x = 0  # x position of character
-char_y = 465  # y position of character
-char_velocity = 10
+char_position = [0, 0]  # x and y axis
 left=False
 right=False
-jump=False
-walkcount = 0
-runcount=0
-game_map=[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
-          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
-
+up=False
+down=False
+char_rect=pygame.Rect(0,0,40,60)
 class game:
-    def __init__(self, win_x, win_y):
-        self.win_x = win_x
-        self.win_y = win_y
-        self.screen = pygame.display.set_mode((self.win_x, self.win_y))
-        pygame.display.set_caption('Blind Love')
-        self.moving = False
+    def __init__(self,screen_x,screen_y):
+        self.screen_x=screen_x
+        self.screen_y=screen_y
+        self.screen=pygame.display.set_mode((self.screen_x,self.screen_y))
+        self.screen.fill((135,206,235))
 
-    def map(self):
-        self.grass = pygame.image.load('Tile Maps/Groud Tile.png').convert_alpha()
-        self.tile_size=self.grass.get_width()
-        self.dirt = pygame.image.load('Tile Maps/soil.png').convert_alpha()
+    def images(self):
+        self.char=pygame.image.load('png files/Still Animation/Still Character Animation1.png')
+        self.char_rect=pygame.Rect(20,20,20,20)
+
+        self.ground=pygame.image.load('Tile Maps/Groud Tile.png')
+        self.soil=pygame.image.load('Tile Maps/soil.png')
+
+    def tile_map(self):
+        self.tile_y=0
         self.tile_rects=[]
-        self.y = 0
-        for row in game_map:
-            self.x = 0
-            for tile in row:
-                if tile == 1:
-                    self.screen.blit(self.dirt, (self.x * 30, self.y * 30))
-                if tile == 2:
-                    self.screen.blit(self.grass, (self.x * 30, self.y * 30))
-                if tile != 0:
-                    self.tile_rects.append(pygame.Rect(self.x * self.tile_size, self.y * self.tile_size, self.tile_size, self.tile_size))
-                self.x += 1
-            self.y += 1
-    def sky(self):
-        self.sky_bg = pygame.image.load('png files/Sky.png').convert_alpha()
-        self.sky_bg = pygame.transform.scale((self.sky_bg), (1000, 1000))
-        self.screen.blit(self.sky_bg, (0, 0))
+        self.tilemap=[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                      [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
+        for self.row in self.tilemap:
+            self.tile_x=0
+            for self.tile in self.row:
+                if self.tile==1:
+                    self.screen.blit(self.soil,(self.tile_x*30,self.tile_y*30))
+                if self.tile == 2:
+                    self.screen.blit(self.ground, (self.tile_x * 30, self.tile_y * 30))
+                if self.tile!=0:
+                    self.tile_rects.append(pygame.Rect(self.tile_x *30, self.tile_y *30, 50, 50))
 
-    def clouds(self):
-        global cloud1_x
-        global cloud2_x
-
-        self.cloud_velocity=1
-        self.cloud1_img = pygame.image.load('png files/clouds.png').convert_alpha()
-        self.cloud2_img = pygame.image.load('png files/clouds.png').convert_alpha()
-        self.cloud1_img = pygame.transform.scale(self.cloud1_img, (700, 600))
-        self.cloud2_img = pygame.transform.scale(self.cloud2_img, (700, 600))
-        self.screen.blit(self.cloud1_img, (cloud1_x, cloud1_y))
-        self.screen.blit(self.cloud2_img, (cloud2_x, cloud2_y))
-        # game_instance.cloud_movement()
-
-        cloud1_x += self.cloud_velocity
-        cloud2_x -= self.cloud_velocity
-
-        # cloudLoop
-        if cloud1_x == 1000:
-            cloud1_x = -800
-        if cloud2_x == -800:
-            cloud2_x = 1000
+                    '''remove the "#" to see the tile rects'''
+                    pygame.draw.rect(self.screen,(255,0,0),self.tile_rects[self.tile_x])
 
 
-    def heart(self, heart_x, heart_y):
-        self.heart_img = pygame.image.load('png files/Heart Animation/Heart1.png')
-        self.heart_rect = pygame.Rect(heart_x, heart_y, 30, 30)
-        self.screen.blit(self.heart_img, (heart_x, heart_y))
+                self.tile_x+=1
+            self.tile_y+=1
 
-        if self.char_rect.colliderect(self.heart_rect):  # collision detection with heart
-            pass
+    def check_collision(self,rect,tiles):
+        collisions = []
+        for tile in tiles:
+            if rect.colliderect(tile):
+                collisions.append(tile)
+        return collisions
 
+    def move_char(self,rect,movement_value,tiles):
+        rect.x+=movement_value[0]
+        collisions = game_instance.check_collision(rect,tiles)
+        for tile in collisions:
+            if movement_value[0]>0:
+                rect.right = tile.left
+            if movement_value[0]<0:
+                rect.left = tile.right
 
-    def character(self):  # load in character frames
+        rect.y=movement_value[1]
+        collisions = game_instance.check_collision(rect, tiles)
+        for tile in collisions:
+            if movement_value[1] > 0:
+                rect.bottom = tile.top
+            if movement_value[1] < 0:
+                rect.top = tile.bottom
+        return rect
+    def load_char(self):
+        global up
+        global down
+        global left
+        global right
+        global char_position
+        global char_rect
 
-        global char_y
-        self.player_y_momentum = 5
+        self.char_velocity=2
 
-        self.char_list = [pygame.image.load('png files/Still Animation/Still Character Animation1.png').convert_alpha(),
-                          pygame.image.load('png files/Still Animation/Still Character Animation2.png').convert_alpha()]
-        self.char_width=self.char_list[0].get_width()
-        self.char_height=self.char_list[0].get_height()
-        self.char_rect = pygame.Rect(char_x, char_y, self.char_width, self.char_height)
+        if right == True:
+            char_position[0] += self.char_velocity
+        if left == True:
+            char_position[0] -= self.char_velocity
+        if up == True:
+            char_position[1] -= self.char_velocity
+        if down == True:
+            char_position[1] += self.char_velocity
+        char_position[1]+=1
 
-        def char_collide():
-            for self.objects in self.tile_rects:
-                if self.char_rect.colliderect(self.objects):
-                    char_x=0
+        char_rect= pygame.Rect((100,60,40,60))
 
-        #gravity
-        if char_y > window_size[1] - self.char_list[0].get_height():
-            char_y = - self.player_y_momentum
-        else:
-            char_y += self.player_y_momentum
-        char_collide()
-
-    def character_anim(self):  # character still animations
-        global walkcount
-        if self.moving == False:  # boolean self.moving is defined in th __init__ function
-            self.char_out = self.screen.blit(self.char_list[walkcount], (char_x, char_y))
-            walkcount += 1
-        #jumpAnim
-
-
-    def moving_anim(self):#running animation script
-        self.key = pygame.key.get_pressed()
-        global walkcount
-        self.moving_list=[pygame.image.load('png files/Walking animations/Walking right1.png').convert_alpha(),
-                          pygame.image.load('png files/Walking animations/Walking right2.png').convert_alpha(),
-                          pygame.image.load('png files/Walking animations/Walking right3.png').convert_alpha(),
-                          pygame.image.load('png files/Walking animations/Walking right4.png').convert_alpha()]
-        if self.moving==True:
-            # self.char_out=self.screen.blit(self.moving_list[walkcount],(char_x,char_y))
-            # walkcount+=1
-            pass
-
-    def char_movement(self):#movement script
-        global char_x
-        global char_y
-        global walkcount
-        global jump
-        self.key = pygame.key.get_pressed()
-        if self.moving == False:
-            if walkcount >= 2:
-                walkcount = 0
-
-        # right movement
-        if (self.key[pygame.K_d] or self.key[pygame.K_RIGHT]) and char_x < 930:
-            self.moving = True
-            char_x += char_velocity
-
-        # Left movement
-        if (self.key[pygame.K_a] or self.key[pygame.K_LEFT]) and char_x > -25:
-            self.moving=True
-            char_x -= char_velocity
-        # Jump
-        if jump==True:
-            char_y-=20
-            jump=False
-        if self.key[pygame.K_w] or self.key[pygame.K_UP]:
-            jump=True
-
-
-# gameloop
-run = True
-while run:
-    game_instance = game(window_size[0],window_size[1])
-
-
-    game_instance.sky()  # sky background
-    game_instance.clouds()  # clouds
-    game_instance.map()
-    # All character Functions are here
-    game_instance.character()
-    game_instance.character_anim()
-    game_instance.moving_anim()
-    game_instance.char_movement()
+        char_rect=game_instance.move_char(self.char_rect,char_position,self.tile_rects)
+        pygame.draw.rect(self.screen,(255,0,0),self.char_rect)
+        self.screen.blit(self.char,(self.char_rect.x,self.char_rect.y))
 
 
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                right = True
+            if event.key == pygame.K_LEFT:
+                left = True
+            if event.key == pygame.K_DOWN:
+                down = True
+            if event.key ==pygame.K_UP:
+                up = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT:
+                right = False
+            if event.key == pygame.K_LEFT:
+                left = False
+            if event.key == pygame.K_DOWN:
+                down = False
+            if event.key == pygame.K_UP:
+                up = False
 
-    game_instance.heart(200, 460)
-    game_instance.heart(500, 460)
+
+
+run=True
+while run == True:
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or game_instance.key[pygame.K_ESCAPE]:
+        if event.type==pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    game_instance = game(1000, 600)
+
+    game_instance.images()
+    game_instance.tile_map()
+    game_instance.load_char()
     pygame.display.update()
-    pygame.display.flip()
-    clock.tick(120)
+
+

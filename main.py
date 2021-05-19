@@ -1,122 +1,114 @@
-import pygame,sys
-pygame.init()
+import pygame as pg
 
-screen=pygame.display.set_mode((500,500))
-char_img=pygame.image.load('png files/Still Animation/Still Character Animation1.png')
-player= pygame.Rect((100,60,40,60))
-tiles=[pygame.Rect(100,200,100,100),pygame.Rect(200,300,100,100)]
-ground=pygame.image.load('Tile Maps/Groud Tile.png')
-soil=pygame.image.load('Tile Maps/soil.png')
-def collision_test(rect,tiles):
-    collisions=[]
-    for tile in tiles:
-        if rect.colliderect(tile):
-            collisions.append(tile)
-    return collisions
+import settings as s
+import tilemap as t
+import collisions as c
 
-def move(rect,movement,tiles):
-    rect.x+=movement[0]
-    collisions=collision_test(rect,tiles)
-    for tile in collisions:
-        if movement[0]>0:
-            rect.right=tile.left
-        if movement[0]<0:
-            rect.left=tile.right
+pg.init()
 
-    rect.y+=movement[1]
-    collisions = collision_test(rect, tiles)
-    for tile in collisions:
-        if movement[1] > 0:
-            rect.bottom = tile.top
-        if movement[1] < 0:
-            rect.top = tile.bottom
-    return rect
+screen = pg.display.set_mode((s.width, s.height))
+pg.display.set_caption(s.title)
 
 
-up=False
-down=False
-left=False
-right=False
-#gameloop
-run=True
+clock = pg.time.Clock()
+# Load images ():
+bg = pg.image.load('png files/background/sky.png').convert_alpha()
+bg = pg.transform.scale(bg, (1000, 600))
 
-tilemap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
-           [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  2, 2, 2, 2, 2],
-           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1],
-           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1],
-           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1]]
-while run==True:
-    screen.fill((255, 255, 255))
-    tile_y = 0
-    tile_rects=[]
-    for row in tilemap:
-        tile_x = 0
+player_img = pg.image.load('png files/Still Animation/Still Character Animation1.png').convert_alpha()
+player_rect = pg.Rect(50, 400, player_img.get_width()-47, player_img.get_height()-33)
+
+cloud1_img = pg.image.load('png files/background/clouds.png').convert_alpha()
+cloud1_img = pg.transform.scale(cloud1_img, (600, 600))
+
+# Surface to display images on to
+display = pg.Surface((300, 200))
+
+pg.display.set_icon(player_img)
+moving_right = False
+moving_left = False
+
+air_timer = 0
+
+
+
+running = True
+while running:
+    display.blit(bg, (0, 0)) # Background
+    # display.fill((0,0,0))
+
+    # Cloud Rendering
+    display.blit(cloud1_img, s.cloud1_pos)
+    s.cloud1_pos[0] += s.cloud_vel
+    display.blit(cloud1_img, s.cloud2_pos)
+    s.cloud2_pos[0] -= s.cloud_vel
+
+    tile_rects = []
+    y = 0
+    for row in t.tilemap:
+        x = 0
         for tile in row:
             if tile == 1:
-                screen.blit(soil, (tile_x * 30, tile_y * 30))
+                display.blit(t.soil_img.convert_alpha(), (x * 30, y * 30))
             if tile == 2:
-                screen.blit(ground, (tile_x * 30, tile_y * 30))
+                display.blit(t.grass_img.convert_alpha(), (x * 30, y * 30))
             if tile != 0:
-                tile_rects.append(pygame.Rect(tile_x * 30, tile_y * 30, 50, 50))
+                tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
 
-                '''remove the "#" to see the tile rects'''
-                # pygame.draw.rect(self.screen,(255,0,0),self.tile_rects[self.tile_x])
-
-            tile_x += 1
-        tile_y += 1
-
-
-    movement=[0,0]
+                # Uncomment the below line to see tile rects
+                # pg.draw.rect(display, (255, 0, 0), pg.Rect(x * 30, y * 30, 30, 30), 2)
+            x += 1
+        y += 1
 
 
-    if right == True:
-        movement[0]+=1
-    if left == True:
-        movement[0]-=1
-    if up == True:
-        movement[1]-=3
-    if down==True:
-        movement[1]+=1
+    player_movement = [0, 0]
+    player_movement[1] += s.gravity
+    s.gravity += 0.4
+    if moving_right:
+        player_movement[0] += 2
+    if moving_left:
+        player_movement[0] -= 2
 
-    movement[1]+=1
+    player_movement[1] += s.gravity
+
+    if s.gravity > 3:
+        s.gravity = 3
+
+    player_rect, collisions = c.move(player_rect, player_movement, tile_rects)
+
+    if collisions['bottom']:
+        s.gravity = 0
+        air_timer = 0
+    else:
+        air_timer += 1
+
+    display.blit(player_img, (player_rect.x - 25, player_rect.y - 16))
+    # Uncomment the below line to see the player rect
+    # pg.draw.rect(display, (255, 0, 0), player_rect,2)
 
 
-    player=move(player,movement,tiles)
-    #pygame.draw.rect(screen,(255,255,255),player)
-    screen.blit(char_img,(player.x-25,player.y-15))
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
 
-    for tile in tiles:
-        pygame.draw.rect(screen,(255,0,0),tile)
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_d:
+                moving_right = True
+            if event.key == pg.K_a:
+                moving_left = True
+            if event.key ==pg.K_w:
+                if air_timer < 6:
+                    s.gravity -= 8
 
-    for event in pygame.event.get():
-        #exit
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_d:
+                moving_right = False
+            if event.key == pg.K_a:
+                moving_left = False
 
-        #player movement
-        if event.type==pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
-            if event.key == pygame.K_RIGHT:
-                right = True
-            if event.key == pygame.K_LEFT:
-                left = True
-            if event.key == pygame.K_DOWN:
-                down = True
-            if event.key == pygame.K_UP:
-                up = True
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_RIGHT:
-                right = False
-            if event.key == pygame.K_LEFT:
-                left = False
-            if event.key == pygame.K_DOWN:
-                down = False
-            if event.key == pygame.K_UP:
-                up = False
-    pygame.display.update()
-    (pygame.time.Clock()).tick(120)
+
+    display = pg.transform.scale(display, (1000,600))
+    screen.blit (display, (0, 0))
+    pg.display.update()
+    clock.tick(60)
+pg.quit()

@@ -4,7 +4,9 @@ title = 'Blind Love'
 
 player_pos = [0, 0]
 gravity = 2
+player_vel = 8
+scroll = [10, 0]
 
-cloud1_pos = [-100, -120]
+cloud1_pos = [-100 , -120]
 cloud2_pos = [400, -80]
-cloud_vel = 0.5
+cloud_vel = 1

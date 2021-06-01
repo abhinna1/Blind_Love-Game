@@ -1,6 +1,6 @@
 width = 1000
 height = 600
-title = 'Blind Love'
+title = 'Hungry Adventure'
 
 player_pos = [0, 0]
 gravity = 2

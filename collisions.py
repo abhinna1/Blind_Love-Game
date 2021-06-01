@@ -1,4 +1,4 @@
-
+import settings as s
 
 def collision_test(rect, tiles):
     hit_list = []

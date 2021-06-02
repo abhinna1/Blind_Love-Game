@@ -11,6 +11,7 @@ from tkinter import *
 pg.init()
 
 
+
 def main_Game():
     def animation():
         animation_list = [pg.image.load('png files/Still Animation/Still Character Animation1.png'),
@@ -70,16 +71,58 @@ def main_Game():
                     heart_lst.append(sushi_rect)
                     # pg.draw.rect(display, (255,0,0), sushi_rect, 2)
 
-                if (tile == 4) and (collected == False):
+                if (tile == 4) and collected == False:
                     # display.blit(display, ((x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
-                    sushi_img = display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    heart_rect = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
-                    heart_lst.append(heart_rect)
+                    sushi_img = (display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    h1 = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
+                    if player_rect.colliderect(h1):
+                        collect_sound.play()
+                        h1.x = 0
+                        score += 1
+                        collected = True
+                if (tile == 8) and t.collected2 == False:
+                    # display.blit(display, ((x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    sushi_img = (display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    h2 = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
+                    if player_rect.colliderect(h2):
+                        collect_sound.play()
+                        h2.x = 0
+                        score += 1
+                        t.collected2 = True
+                if (tile == 9) and t.collected9 == False:
+                    sushi_img = (display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    h9 = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
+                    if player_rect.colliderect(h9):
+                        collect_sound.play()
+                        h9.x = 0
+                        score += 1
+                        t.collected9 = True
+
+                if (tile == 10) and t.collected10 == False:
+                    sushi_img = (display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    h10 = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
+                    if player_rect.colliderect(h10):
+                        collect_sound.play()
+                        h10.x = 0
+                        score += 1
+                        t.collected10 = True
+
+                if (tile == 11) and t.collected11 == False:
+                    sushi_img = (display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    h11 = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
+                    if player_rect.colliderect(h11):
+                        collect_sound.play()
+                        h11.x = 0
+                        score += 1
+                        t.collected11 = True
 
                 if tile == 5:
                     display.blit(t.enemy.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
                     enemy_rect = pg.Rect(x * 30, y * 30 + 10, 35, 45)
                     enemy_lst.append(enemy_rect)
+                    if player_rect.colliderect(enemy_rect):
+                        fly_sound.play()
+                        s.gravity -= 1
 
                     # pg.draw.rect(display, (255,255,0), enemy_rect, 2)
                     # Uncomment the below line to see tile rects
@@ -91,18 +134,10 @@ def main_Game():
             y += 1
 
         # Sushi Collision
-        for h in heart_lst:
-            if player_rect.colliderect(h):
-                score += 1
-                collected = True
-                print(score)
 
-        # Enemy Collisions
-        for e in enemy_lst:
-            if player_rect.colliderect(e):
-                enemy_lst.remove(e)
-                fly_sound.play()
-                s.gravity -= 1
+
+
+
 
         # Implementing Gravity
         player_movement = [0, 0]
@@ -139,12 +174,13 @@ def main_Game():
         respawn_btn = button(display, (820, 15), 'Respawn', 20)
 
     def load_sounds():
-        global jump_sound, fly_sound, sound_img
+        global jump_sound, fly_sound, sound_img, collect_sound
         # Loading Sounds
         jump_sound = pg.mixer.Sound('Sounds/Jump.mp3')
         fly_sound = pg.mixer.Sound('Sounds/Fly.wav')
         sound_img = pg.image.load('png files/Sound Img.png')
         sound_img = pg.transform.scale(sound_img, (50, 50))
+        collect_sound = pg.mixer.Sound('Sounds/coin_collected.wav')
 
     screen = pg.display.set_mode((s.width, s.height))
     pg.display.set_caption(s.title)
@@ -230,6 +266,10 @@ def main_Game():
                     s.scroll[0] = 0
                     score = 0
                     collected = False
+                    t.collected2= False
+                    t.collected9 = False
+                    collected10 = False
+                    collected11 = False
 
         display = pg.transform.scale(display, (1000, 600))
         screen.blit(display, (0, 0))
@@ -352,5 +392,5 @@ def main():
     pg.mixer.music.play(-1)
     main_menu()
 
-music = pg.mixer.music.load('Growtopia Update Song.mp3')
+music = pg.mixer.music.load('Sounds/Music.mp3')
 main()

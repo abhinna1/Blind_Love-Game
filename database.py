@@ -34,4 +34,3 @@ def clear():
         c.execute(f"DELETE FROM userDetails WHERE oid = {i}")
     con.commit()
     con.close()
-

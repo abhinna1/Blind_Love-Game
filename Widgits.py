@@ -25,3 +25,4 @@ def Entry(screen, text, x, y, base_font=pg.font.Font(None, 30)):
 def Label(screen, text, x, y, base_font=pg.font.Font(None, 30)):
     text_surface = base_font.render(text, True, (255, 0, 0))
     screen.blit(text_surface, (x, y))
+

@@ -133,11 +133,6 @@ def main_Game():
                 x += 1
             y += 1
 
-        # Sushi Collision
-
-
-
-
 
         # Implementing Gravity
         player_movement = [0, 0]

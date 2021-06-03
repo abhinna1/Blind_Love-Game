@@ -1,4 +1,5 @@
-# Blind_Love-Game
-
-All the png files for the video game are available in the "png files" folder.
-Likewise, the ase files for aseprite software used for designing 2D models are available in the "ase Files Folder"
+# Hungry Adventure
+Hungry Adventure is a platformer based game made with pygame library in python programming language.
+The main.py file has the main code for the game.
+The database.py file hase the functions to perform operations on the database.
+tilemap.py has the tilemap for the main game and other variables.

@@ -6,11 +6,118 @@ import settings as s
 import tilemap as t
 import collisions as c
 import animations as a
-from tkinter import *
 
 pg.init()
 
+def main_menu():
+    def menumap(display):
+        # Tile Map Rendering
+        tile_rects = []
+        heart_lst = []
+        enemy_lst = []
+        y = 0
+        for row in t.menu_map:
+            x = 0
+            for tile in row:
+                if tile == 1:
+                    display.blit(t.dirt1_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
+                    tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
+                if tile == 2:
+                    display.blit(t.grass_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
+                    tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
 
+                if tile == 3:
+                    display.blit(t.dirt2_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
+                    sushi_rect = pg.Rect(x * 30, y * 30, 30, 30)
+                    heart_lst.append(sushi_rect)
+                    # pg.draw.rect(display, (255,0,0), sushi_rect, 2)
+
+                if (tile == 4):
+                    # display.blit(display, ((x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
+                    sushi_img = display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
+                    heart_rect = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
+                    heart_lst.append(heart_rect)
+
+                if tile == 5:
+                    display.blit(t.enemy.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
+                    enemy_rect = pg.Rect(x * 30, y * 30 + 10, 35, 45)
+                    enemy_lst.append(enemy_rect)
+
+                    # pg.draw.rect(display, (255,255,0), enemy_rect, 2)
+                    # Uncomment the below line to see tile rects
+                    # pg.draw.rect(display, (255, 0, 0), pg.Rect(x * 30, y * 30, 30, 30), 2)
+                if tile == 6:
+                    display.blit(t.sand_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
+                    tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
+                x += 1
+            y += 1
+
+    def button(screen, position, text, size):
+        font = pg.font.SysFont("Cambria", size)
+        text_render = font.render(text, True, (255, 0, 0))
+        x, y, w, h = text_render.get_rect()
+        x, y = position
+        pg.draw.rect(screen, (120, 120, 200), (x - 5, y - 5, w + 10, h + 10))
+        pg.draw.rect(screen, (140, 140, 200), (x, y, w, h))
+        return screen.blit(text_render, (x, y))
+
+    def Entry(text, x, y, base_font=pg.font.Font(None, 30)):
+        rect = pg.Rect((x, y, 400, 32))
+        color = (255, 0, 0)
+        pg.draw.rect(screen, color, rect, 2)
+        text_surface = base_font.render(text, True, (255, 255, 255))
+        screen.blit(text_surface, (rect.x + 5, rect.y + 5))
+        return rect
+
+    def Label(text, x, y, base_font=pg.font.Font(None, 30)):
+        text_surface = base_font.render(text, True, (255, 0, 0))
+        screen.blit(text_surface, (x, y))
+
+
+    screen = pg.display.set_mode((1000, 600))
+    pg.display.set_caption(s.title)
+    bg = pg.image.load('png files/Menu bg.png')
+    bg = pg.transform.scale(bg, (1000, 600))
+    type_sound = pg.mixer.Sound('Sounds/type2.wav')
+    click_sound = pg.mixer.Sound('Sounds/Type.wav')
+    icon = pg.image.load('png files/Still Animation/Still Character Animation1.png')
+    pg.display.set_icon(icon)
+
+    if len(database.show()) == 0:
+        t1 = ''
+    else:
+        t1 = (database.show()[0])[0]
+    run = True
+    while run:
+        screen.blit(bg, (0,0))
+        menumap(screen)
+        text_entry = Entry(t1, 300, 50)
+        Label('Enter Name', 420, 100)
+        b1 = button(screen, (350, 125), 'Start Game', 50)
+        clear_btn = button(screen, (710, 55), 'Clear Text', 20)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if b1.collidepoint(pg.mouse.get_pos()):
+                    database.clear()
+                    database.add(t1)
+                    click_sound.play()
+                    main_Game()
+
+                if clear_btn.collidepoint(pg.mouse.get_pos()):
+                    t1 = ''
+                    type_sound.play()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_BACKSPACE:
+                    type_sound.play()
+                    t1 = t1[0:-1]
+                else:
+                    type_sound.play()
+                    t1 += event.unicode
+        pg.display.update()
+    pg.quit()
 
 def main_Game():
     def animation():
@@ -37,16 +144,27 @@ def main_Game():
         text_surface = base_font.render(text, True, color)
         screen.blit(text_surface, (x, y))
 
+
     def clouds():
         # Cloud Rendering
         display.blit(cloud1_img, (s.cloud1_pos[0] - s.scroll[0], s.cloud1_pos[1] - s.scroll[1]))
         s.cloud1_pos[0] += s.cloud_vel
-        if s.cloud1_pos[0] >= 1200:
+        if s.cloud1_pos[0] >= 4000:
             s.cloud1_pos[0] = -600
         display.blit(cloud1_img, (s.cloud2_pos[0] - s.scroll[0], s.cloud2_pos[1] - s.scroll[1]))
         s.cloud2_pos[0] -= s.cloud_vel
         if s.cloud2_pos[0] <= -600:
-            s.cloud2_pos[0] = 1200
+            s.cloud2_pos[0] = 4000
+
+        display.blit(cloud1_img, (s.cloud3_pos[0] - s.scroll[0], s.cloud3_pos[1] - s.scroll[1]))
+        s.cloud3_pos[0] += s.cloud_vel
+        if s.cloud3_pos[0] >= 4000:
+            s.cloud1_pos[0] = -600
+        display.blit(cloud1_img, (s.cloud4_pos[0] - s.scroll[0], s.cloud4_pos[1] - s.scroll[1]))
+        s.cloud4_pos[0] -= s.cloud_vel
+        if s.cloud4_pos[0] <= -600:
+            s.cloud4_pos[0] = 4000
+
 
     def tilemap():
         nonlocal air_timer, player_rect, score, collected
@@ -169,13 +287,14 @@ def main_Game():
         respawn_btn = button(display, (820, 15), 'Respawn', 20)
 
     def load_sounds():
-        global jump_sound, fly_sound, sound_img, collect_sound
+        global jump_sound, fly_sound, sound_img, collect_sound, completed_sound
         # Loading Sounds
         jump_sound = pg.mixer.Sound('Sounds/Jump.mp3')
         fly_sound = pg.mixer.Sound('Sounds/Fly.wav')
         sound_img = pg.image.load('png files/Sound Img.png')
         sound_img = pg.transform.scale(sound_img, (50, 50))
         collect_sound = pg.mixer.Sound('Sounds/coin_collected.wav')
+        completed_sound = pg.mixer.Sound('Sounds/Completed.wav')
 
     screen = pg.display.set_mode((s.width, s.height))
     pg.display.set_caption(s.title)
@@ -201,18 +320,26 @@ def main_Game():
     air_timer = 0  # Jump Time
     score = 0  # Initializing score
 
-    collected = False
     running = True
     load_sounds()
+    s.scroll[0] = 0
+
+    collected = False
+    t.collected2 = False
+    t.collected9 = False
+    t.collected10 = False
+    t.collected11 = False
+    flag_img = pg.image.load('png files/flag.png')
+    flag_img = pg.transform.scale(flag_img, (400,400))
     while running:
         display.blit(bg, (0, 0))  # Background
         # display.fill((0,0,0))
 
+
         if player_rect.x > ((t.tilemap[0])[0]) + 300:  # if player position is not near map edge move camera x position
             s.scroll[0] += (player_rect.x - s.scroll[0] - 340) / 10
         else:
-            if (s.scroll >= [30, 0]) and (
-                    player_rect.x <= (t.tilemap[0])[0]):  # if player position is near map edge move camera position
+            if (s.scroll >= [30, 0]) and (player_rect.x <= (t.tilemap[0])[0]):  # if player position is near map edge move camera position
                 s.scroll[0] = (s.scroll[0] + (350 / 10))
         s.scroll[1] += (player_rect.y - s.scroll[1] - 300) / 30  # Y- Camera movement - Always Enabled
 
@@ -225,6 +352,10 @@ def main_Game():
 
         widgets()
 
+        display.blit(flag_img, (3280 - s.scroll[0], 270 - s.scroll[1]))
+        if player_rect.x >= 3467:
+            completed_sound.play()
+            finish(score)
         # Uncomment the below line to see the player rect
         # pg.draw.rect(display, (255, 0, 0), player_rect,2)
 
@@ -257,64 +388,22 @@ def main_Game():
                         pg.mixer.music.set_volume(0)
 
                 if respawn_btn.collidepoint(pg.mouse.get_pos()):
+                    collected = False
+                    t.collected2 = False
+                    t.collected9 = False
+                    t.collected10 = False
+                    t.collected11 = False
                     player_rect.x, player_rect.y = 10, 420
                     s.scroll[0] = 0
                     score = 0
-                    collected = False
-                    t.collected2= False
-                    t.collected9 = False
-                    collected10 = False
-                    collected11 = False
+
 
         display = pg.transform.scale(display, (1000, 600))
         screen.blit(display, (0, 0))
         pg.display.update()
         clock.tick(60)
 
-
-def main_menu():
-    def menumap(display):
-        # Tile Map Rendering
-        tile_rects = []
-        heart_lst = []
-        enemy_lst = []
-        y = 0
-        for row in t.menu_map:
-            x = 0
-            for tile in row:
-                if tile == 1:
-                    display.blit(t.dirt1_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
-                if tile == 2:
-                    display.blit(t.grass_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
-
-                if tile == 3:
-                    display.blit(t.dirt2_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    sushi_rect = pg.Rect(x * 30, y * 30, 30, 30)
-                    heart_lst.append(sushi_rect)
-                    # pg.draw.rect(display, (255,0,0), sushi_rect, 2)
-
-                if (tile == 4):
-                    # display.blit(display, ((x * 30 - s.scroll[0], y * 30 - s.scroll[1])))
-                    sushi_img = display.blit(t.sushi.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    heart_rect = pg.Rect(x * 30 + 21, y * 30 + 30, 40, 40)
-                    heart_lst.append(heart_rect)
-
-                if tile == 5:
-                    display.blit(t.enemy.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    enemy_rect = pg.Rect(x * 30, y * 30 + 10, 35, 45)
-                    enemy_lst.append(enemy_rect)
-
-                    # pg.draw.rect(display, (255,255,0), enemy_rect, 2)
-                    # Uncomment the below line to see tile rects
-                    # pg.draw.rect(display, (255, 0, 0), pg.Rect(x * 30, y * 30, 30, 30), 2)
-                if tile == 6:
-                    display.blit(t.sand_img.convert_alpha(), (x * 30 - s.scroll[0], y * 30 - s.scroll[1]))
-                    tile_rects.append(pg.Rect(x * 30, y * 30, 30, 30))
-                x += 1
-            y += 1
-
+def finish(score = 0):
     def button(screen, position, text, size):
         font = pg.font.SysFont("Cambria", size)
         text_render = font.render(text, True, (255, 0, 0))
@@ -324,13 +413,6 @@ def main_menu():
         pg.draw.rect(screen, (140, 140, 200), (x, y, w, h))
         return screen.blit(text_render, (x, y))
 
-    def Entry(text, x, y, base_font=pg.font.Font(None, 30)):
-        rect = pg.Rect((x, y, 400, 32))
-        color = (255, 0, 0)
-        pg.draw.rect(screen, color, rect, 2)
-        text_surface = base_font.render(text, True, (255, 255, 255))
-        screen.blit(text_surface, (rect.x + 5, rect.y + 5))
-
     def Label(text, x, y, base_font=pg.font.Font(None, 30)):
         text_surface = base_font.render(text, True, (255, 0, 0))
         screen.blit(text_surface, (x, y))
@@ -338,54 +420,47 @@ def main_menu():
 
     screen = pg.display.set_mode((1000, 600))
     pg.display.set_caption(s.title)
-    pg.display.set_icon(pg.image.load('png files/Still Animation/Still Character Animation1.png'))
-    bg = pg.image.load('png files/background/sky.png')
+    bg = pg.image.load('png files/Menu bg.png')
     bg = pg.transform.scale(bg, (1000, 600))
     type_sound = pg.mixer.Sound('Sounds/type2.wav')
     click_sound = pg.mixer.Sound('Sounds/Type.wav')
-
-    if len(database.show()) == 0:
-        t1 = ''
-    else:
-        t1 = (database.show()[0])[0]
+    icon = pg.image.load('png files/Still Animation/Still Character Animation1.png')
+    pg.display.set_icon(icon)
     run = True
+    msg = ''
+    index = (database.show()[0])[0]
+    s.cloud1_pos = [-100, -120]
+    s.cloud2_pos = [400, -80]
+    s.cloud3_pos = [1000, -130]
+    s.cloud4_pos = [4000, -90]
+    s.cloud_vel = 3
     while run:
         screen.blit(bg, (0,0))
-        menumap(screen)
-        Entry(t1, 300, 250)
-        Label('Enter Name', 420, 310)
-        b1 = button(screen, (350, 350), 'Start Game', 50)
-        clear_btn = button(screen, (710, 255), 'Clear Text', 20)
-
+        msg = f'Congratulations, {index}!'
+        Label(msg, 300, 80)
+        Label(f'Your score is {score}', 380, 120)
+        restart_btn = button(screen, (320, 150), 'Restart', 32)
+        menu_btn = button(screen, (450, 150), 'Return To Menu', 30)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
-                if b1.collidepoint(pg.mouse.get_pos()):
-                    database.clear()
-                    database.add(t1)
+                if restart_btn.collidepoint(pg.mouse.get_pos()):
                     click_sound.play()
+                    s.scroll[1] = 0
                     main_Game()
-
-                if clear_btn.collidepoint(pg.mouse.get_pos()):
-                    t1 = ''
-                    type_sound.play()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_BACKSPACE:
-                    type_sound.play()
-                    t1 = t1[0:-1]
-                else:
-                    type_sound.play()
-                    t1 += event.unicode
+                if menu_btn.collidepoint(pg.mouse.get_pos()):
+                    click_sound.play()
+                    main_menu()
         pg.display.update()
     pg.quit()
+
 
 
 def main():
 
     pg.mixer.music.play(-1)
     main_menu()
-
 music = pg.mixer.music.load('Sounds/Music.mp3')
 main()

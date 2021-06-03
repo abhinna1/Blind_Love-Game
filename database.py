@@ -18,7 +18,6 @@ def show():
     con.close()
     return data
 
-
 def add(un):
     con = sqlite3.connect('UserInfo.db')
     c = con.cursor()
@@ -36,4 +35,3 @@ def clear():
     con.commit()
     con.close()
 
-print(show())

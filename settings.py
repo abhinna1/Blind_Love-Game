@@ -11,4 +11,6 @@ stillcount = 0
 
 cloud1_pos = [-100 , -120]
 cloud2_pos = [400, -80]
-cloud_vel = 1
+cloud3_pos = [1000, -130]
+cloud4_pos = [4000, -90]
+cloud_vel = 3

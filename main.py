@@ -89,7 +89,7 @@ def main_menu():
         t1 = (database.show()[0])[0]
     run = True
     while run:
-        screen.blit(bg, (0,0))
+        screen.blit(bg, (0, 0))
         menumap(screen)
         text_entry = Entry(t1, 300, 50)
         Label('Enter Name', 420, 100)
@@ -287,7 +287,7 @@ def main_Game():
         respawn_btn = button(display, (820, 15), 'Respawn', 20)
 
     def load_sounds():
-        global jump_sound, fly_sound, sound_img, collect_sound, completed_sound
+        global jump_sound, fly_sound, sound_img, collect_sound, completed_sound, respawn_sound
         # Loading Sounds
         jump_sound = pg.mixer.Sound('Sounds/Jump.mp3')
         fly_sound = pg.mixer.Sound('Sounds/Fly.wav')
@@ -295,6 +295,7 @@ def main_Game():
         sound_img = pg.transform.scale(sound_img, (50, 50))
         collect_sound = pg.mixer.Sound('Sounds/coin_collected.wav')
         completed_sound = pg.mixer.Sound('Sounds/Completed.wav')
+        respawn_sound = pg.mixer.Sound('Sounds/Respawn_Sound.wav')
 
     screen = pg.display.set_mode((s.width, s.height))
     pg.display.set_caption(s.title)
@@ -331,6 +332,7 @@ def main_Game():
     t.collected11 = False
     flag_img = pg.image.load('png files/flag.png')
     flag_img = pg.transform.scale(flag_img, (400,400))
+
     while running:
         display.blit(bg, (0, 0))  # Background
         # display.fill((0,0,0))
@@ -388,6 +390,7 @@ def main_Game():
                         pg.mixer.music.set_volume(0)
 
                 if respawn_btn.collidepoint(pg.mouse.get_pos()):
+                    respawn_sound.play()
                     collected = False
                     t.collected2 = False
                     t.collected9 = False
@@ -459,7 +462,6 @@ def finish(score = 0):
 
 
 def main():
-
     pg.mixer.music.play(-1)
     main_menu()
 music = pg.mixer.music.load('Sounds/Music.mp3')

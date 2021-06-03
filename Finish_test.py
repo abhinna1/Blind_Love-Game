@@ -36,7 +36,7 @@ def finish(score = 0):
     s.cloud3_pos = [1000, -130]
     s.cloud4_pos = [4000, -90]
     s.cloud_vel = 3
-    print(f'The name stored in databse is {index}')
+    print(f'The name stored in database is {index}')
     while run:
         screen.blit(bg, (0,0))
 
@@ -60,4 +60,4 @@ def finish(score = 0):
         pg.display.update()
     pg.quit()
 
-finish(10)
+finish(5)

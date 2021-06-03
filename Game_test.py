@@ -215,16 +215,19 @@ def cloud_test():
         clouds()
     except:
         print('error')
+
 def tilemap_test():
     try:
         tilemap()
     except:
         print('error')
+
 def animation_test():
     try:
         animation()
     except:
         print('error')
+
 def widgets_test():
     try:
         widgets()
@@ -245,7 +248,9 @@ while running:
     s.scroll[1] += (player_rect.y - s.scroll[1] - 300) / 30
 
     cloud_test()
-
+    widgets_test()
+    tilemap_test()
+    animation_test()
 
     # Event Handling
     for event in pg.event.get():
